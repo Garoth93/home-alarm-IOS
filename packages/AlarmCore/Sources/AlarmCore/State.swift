@@ -10,6 +10,14 @@ public struct HouseState: Equatable, Sendable {
     public var since: Date?
     public var lastEvent: AlarmEvent?
 
+    public init(isArmed: Bool, zoneID: UUID?, zoneName: String?, since: Date?, lastEvent: AlarmEvent?) {
+        self.isArmed = isArmed
+        self.zoneID = zoneID
+        self.zoneName = zoneName
+        self.since = since
+        self.lastEvent = lastEvent
+    }
+
     public static let unknown = HouseState(isArmed: false, zoneID: nil, zoneName: nil, since: nil, lastEvent: nil)
 
     public var title: String {
