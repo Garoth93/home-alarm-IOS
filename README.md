@@ -121,3 +121,37 @@ packages/AlarmCore/    logica non grafica, testata con `swift test` anche su Lin
 .github/workflows/     build-simulator, build-ipa, test-linux
 CLAUDE.md              convenzioni e regole di lavoro per Claude Code
 ```
+
+---
+
+# instaStats per iPhone
+
+Versione iPhone di [insta-statistics](https://github.com/Garoth93/insta-statistics):
+capisci chi ti segue su Instagram partendo dall'**export ufficiale**. Non serve
+dare la password a nessuno e i dati restano sul telefono.
+
+1. **Scarica l'export**: Instagram › Impostazioni › Centro gestione account ›
+   Le tue informazioni e autorizzazioni › Scarica le tue informazioni › solo
+   "Follower e persone seguite", formato **JSON**.
+2. **Importa** lo ZIP dall'app File (o "Condividi › instaStats"). Ogni import
+   diventa un'**istantanea**.
+3. **Rivedi** i *Non ricambiano* a schede: scorri a **sinistra per tenere**, a
+   **destra per smettere di seguire**. Annulla sempre disponibile.
+4. **Smetti di seguire**: la sessione apre i profili uno alla volta su Instagram.
+   Al prossimo import chi non segui più perde il segno da solo.
+5. **Ripeti ogni tanto**: con due istantanee compaiono *Follower persi*,
+   *Nuovi follower*, *Nuovi seguiti*, *Non segui più* e il grafico.
+
+Liste: Non ricambiano, Fan, Reciproci, Follower, Seguiti, Richieste in sospeso,
+Nuovi follower, Follower persi, Nuovi seguiti, Non segui più, Da smettere di
+seguire, Tenuti, Amici stretti, Smessi di recente. Ognuna si cerca, si ordina,
+si esporta in CSV; scorri una riga per tenere / smettere, "Seleziona" per
+agire su molti account insieme. Il dettaglio mostra da quando vi seguite, la
+nota e lo storico nelle istantanee.
+
+**Dal PC**: in Altro › *Importa da instaStats desktop* scegli il file
+`instastats.db` (copialo prima in iCloud Drive): istantanee, segni e note
+arrivano sul telefono.
+
+Installazione: workflow **build-ipa** › artifact `InstaStats-unsigned-ipa` ›
+Sideloadly, come per Antifurto.

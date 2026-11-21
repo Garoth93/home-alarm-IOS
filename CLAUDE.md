@@ -44,6 +44,7 @@ App presenti:
 | App       | Package logica | Bundle ID                                  | Deployment target |
 |-----------|----------------|--------------------------------------------|-------------------|
 | HomeAlarm | AlarmCore      | `com.garoth93.homealarm` (+ `.widgets`)    | iOS 26.0 |
+| InstaStats| InstaCore      | `com.garoth93.instastats`                  | iOS 26.0 |
 
 HomeAlarm ("Antifurto" sulla Home): comanda l'antifurto di casa via **SMS**
 alla centralina. Modello: **Casa** (numero di telefono, comando di
@@ -76,6 +77,31 @@ mai nel JSON condiviso. Esempio: zona "Totale" = `attiva 1-2-3`, password
 - In CI il `.ipa` viene firmato **ad-hoc** con `HomeAlarm.entitlements` e
   `Widgets.entitlements` (step "Package unsigned .ipa") così Sideloadly vede
   l'App Group.
+
+InstaStats ("instaStats" sulla Home): versione iPhone dell'app desktop
+`Garoth93/insta-statistics` (Qt/QML, privata). Stessa logica, riscritta in Swift
+nel package `InstaCore`:
+
+- `ExportReader` + `MiniZip` (inflate in Swift puro, ZIP64, legge solo i JSON
+  utili anche da export di GB): formati JSON vecchi, 2024+ e `label_values`
+  2025, etichette IT/EN; proprietario da `personal_information.json` o dal
+  nome `instagram-<utente>-AAAA-MM-GG-…`; HTML riconosciuto e rifiutato.
+- `InstaData`: istantanee (`Snapshot`, liste per `Rel`) + segni per
+  proprietario e username (`MarkInfo`: tieni / da smettere + nota). Import
+  con firma anti-duplicati; i "da smettere" che non segui più si tolgono da
+  soli; `il_mio_account` si unisce al primo proprietario reale.
+- `Analysis`: confronto istantanea corrente / confronto, 14 liste
+  (`ListKind`, stessi predicati di `AppController::inView` desktop),
+  statistiche, sottotitoli, iniziali e colore avatar, CSV `;` con BOM.
+- App: Panoramica (numeri, cambiamenti, grafico andamento), Liste (cerca,
+  ordina, swipe tieni/da smettere, selezione multipla, CSV), **Rivedi** a
+  schede (scorri a sinistra = tieni, a destra = da smettere, come Sweep) e
+  sessione "Smetti di seguire" che apre i profili uno alla volta, Altro
+  (import ZIP/cartella/JSON anche multipli, "Apri con" per gli ZIP,
+  istantanee, rinomina account, backup JSON, import del DB SQLite della
+  versione desktop `instastats.db` in `DesktopDatabase.swift`).
+- Persistenza: `instastats.json` in Application Support (`JSONFileStore`),
+  salvataggio differito.
 
 Per aggiungere un'app: creare `apps/<Nome>/project.yml` + `Sources/` +
 `Resources/`; i workflow scoprono automaticamente le cartelle in `apps/`
@@ -132,7 +158,7 @@ Con `gh` (se il token è valido):
 gh run list --limit 10
 gh run view <run-id> --log-failed
 gh run watch <run-id>
-gh run download <run-id> -n HomeAlarm-unsigned-ipa
+gh run download <run-id> -n HomeAlarm-unsigned-ipa   # oppure InstaStats-unsigned-ipa
 ```
 
 Con gli strumenti GitHub MCP disponibili a Claude Code (quando `gh` non è
@@ -155,4 +181,5 @@ Gli errori Swift compaiono come annotazioni `::error file=...` grazie a
    secrets: indicare all'utente cosa configurare.
 4. I test del package si possono eseguire in locale con Docker:
    `docker run --rm -v "$PWD":/src -w /src swift:6.0-noble swift test --package-path packages/AlarmCore`
+   (e `packages/InstaCore`)
    (avviare `dockerd` se non è attivo). L'app SwiftUI si compila solo in CI.
